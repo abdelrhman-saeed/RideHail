@@ -2,16 +2,9 @@ import { Model, DataTypes } from 'sequelize';
 
 
 export default (sequelize) => {
-    class User extends Model {
-        static associate(models) {
-            User.hasOne(models.Driver, {
-                foreignKey: 'user_id',
-                as: 'driver',
-            });
-        }
-    }
+    class Rider extends Model {}
 
-    User.init({
+    Rider.init({
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -52,11 +45,11 @@ export default (sequelize) => {
         },
     }, {
         sequelize,
-        modelName: 'User',
-        tableName: 'Users',
+        modelName: 'Rider',
+        tableName: 'Riders',
         // underscored: true,
         timestamps: false,
     });
 
-    return User;
+    return Rider;
 };

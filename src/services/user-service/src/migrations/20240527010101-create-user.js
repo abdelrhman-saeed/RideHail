@@ -6,7 +6,7 @@
  */
 export async function up(queryInterface, Sequelize) {
 
-  await queryInterface.createTable('Users', {
+  await queryInterface.createTable('Riders', {
 
     id: {
       type: Sequelize.INTEGER,
@@ -36,11 +36,6 @@ export async function up(queryInterface, Sequelize) {
       allowNull: false
     },
 
-    userType: {
-      type: Sequelize.ENUM('rider', 'driver'),
-      allowNull: false
-    },
-
     createdAt: {
       type: Sequelize.DATE,
       allowNull: false,
@@ -56,5 +51,5 @@ export async function up(queryInterface, Sequelize) {
 }
 
 export async function down(queryInterface, sequelize) {
-  return queryInterface.dropTable('Users');
+  return queryInterface.dropTable('Riders');
 }

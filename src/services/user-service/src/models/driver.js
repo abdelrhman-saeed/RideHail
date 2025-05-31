@@ -1,14 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  class Driver extends Model {
-    static associate(models) {
-      Driver.belongsTo(models.User, {
-        foreignKey: 'user_id',
-        as: 'user',
-      });
-    }
-  }
+
+  class Driver extends Model {}
 
   Driver.init({
     id: {
@@ -17,8 +11,24 @@ export default (sequelize) => {
       autoIncrement: true,
     },
 
-    userId: {
-      type: DataTypes.INTEGER,
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+
+    phoneNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    passwordHash: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
 
@@ -35,6 +45,7 @@ export default (sequelize) => {
     licensePlate: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true
     },
 
     status: {

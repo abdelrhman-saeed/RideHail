@@ -9,18 +9,31 @@ export async function up(queryInterface, Sequelize) {
   await queryInterface.createTable('Drivers', {
 
     id: {
-
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
 
-    userId: {
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
 
-        type: Sequelize.INTEGER, allowNull: false,
-        references: { model: 'Users', key: 'id', },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true
+    },
+
+    phoneNumber: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true
+    },
+
+    passwordHash: {
+      type: Sequelize.STRING,
+      allowNull: false
     },
 
     vehicleMake: {
@@ -50,7 +63,6 @@ export async function up(queryInterface, Sequelize) {
     },
 
     updatedAt: {
-
       type: Sequelize.DATE,
       allowNull: false,
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')

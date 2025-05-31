@@ -2,7 +2,8 @@
 import 'dotenv/config'
 import express from 'express'
 import sequelize from './database/sequeilize.js'
-import userRoutes from './routes/user.js'
+import driverRoutes from './routes/driver.js'
+import riderRoutes from './routes/rider.js'
 
 // 
 const app = express()
@@ -10,7 +11,9 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-app.use('/users', userRoutes)
+app.use('/riders', riderRoutes)
+app.use('/drivers',driverRoutes)
+
 
 await sequelize.sync()
 
