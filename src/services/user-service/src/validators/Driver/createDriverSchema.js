@@ -23,6 +23,10 @@ export const createDriverSchema = Joi.object({
                 .min(10)
                 .required(),
 
+        licensePlate: Joi
+                .string()
+                .required(),
+
         vehicleMake: Joi
                 .string()
                 .required(),

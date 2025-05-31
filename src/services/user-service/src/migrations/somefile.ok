@@ -1,0 +1,141 @@
+SQL:
+
+    users:
+        id,
+        name,
+        email,
+        phone,
+        password,
+        user_type(rider, driver)
+
+
+    drivers:
+        id,
+        user_id,
+        vehicle_make,
+        vehicle_model,
+        license_plate,
+        status(AVAILABLE, UNAVAILABLE)
+
+
+    rides:
+        id,
+        rider_id,
+        driver_id (null),
+        pickup_latitude,
+        pickup_longitude,
+        dropoff_latitude,
+        dropoff_longitude
+
+    rides_updated:
+        id,
+        ride_id,
+        status (REQUESTED, ASSIGNED, IN_TRANSIT),
+        timestamp (now)
+
+    payments:
+        id,
+        ride_id,
+        rider_id,
+        amount: 15.00 LE,
+        status: COMPLETED,
+        paid_at: timestamp
+
+
+NOSQL: MONGO DB COLLECTIONS:
+
+    driver_locations {
+        
+        "driver_id",
+        "location": {
+            "latitude": 37.7789,
+            "longitude": 37.7789,
+        },
+        "status": "AVAILABLE",
+        "updated_at": "some dataetime format"
+    }
+
+    active_rides {
+
+        "ride_id": "000",
+        "rider_id": "1",
+        "driver_id": "1",
+        "status": "IN_TRANSIT",
+        
+        "pickup_location": {
+
+            "latitude": 37.7789,
+            "longitude": 37.7789,
+        },
+        
+        "dropoff_location": {
+
+            "latitude": 37.7789,
+            "longitude": 37.7789,
+        },
+        
+        "driver_location": {
+
+            "latitude": 37.7789,
+            "longitude": 37.7789,
+        },
+
+        "updated_at": "some dataetime format"
+    }
+
+example scenario:
+    # rider requests a ride, driver accepts
+
+    1   - rider requests a ride sending location and destination,
+        - inserting data into rides trable with driver (null),
+        - publishing a ride requested event.
+
+    2  - matching services listens to the ride requested event.
+       - searchers for the closest driver and assigns him to the rider and driver's app shows rider pickup point
+       - update rides table with ride status and driver id
+       - insert into ride_updates table
+       - rider gets a notification that a driver accepted his ride
+       - rider app shows drivers pick updated the driver location collection with driver location every few seconds
+       - driver picks up rider, the rides table is updated with status "in_transit" and inserting to ride_updates table
+       - when ride is over, driver marks it as completed and the system updates the status
+            updating the rides table and inserting into the rides_updates table
+
+    3- payment
+
+    - sen:
+        
+        - driver_created_event
+            - listeners:
+                - Log Listener
+                - Rider Avilability Listener
+
+        - ride_created_event
+            - listeners:
+                - Log Listener
+
+        - ride requested:
+            - listeners:    
+                - Log Listener
+                - Matching Service Listener
+
+        - ride assigned:
+            - listeners:
+                - Log Listener
+                - Notification Listener
+                
+
+    services:
+
+        - ride services:
+            manages the ride life cycle (cruds),
+            and coordinates interaction between riders driver service
+
+        - driver service:
+            keeps track of driver availability and location providing essential data
+            for matching riders with drivers
+
+        - matching service: match ride requests with availabile drivers based on proximity and other criteria 
+
+        - location service:
+            handles real-time location tracking for drivers and riders
+            stotring recent updated for quick access

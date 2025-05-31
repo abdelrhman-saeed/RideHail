@@ -1,21 +1,37 @@
 import db from '../models/index.js'
 import { sendKafkaMessage } from '../kafka/producer.js'
-import { createDriverSchema } from '../validators/createDriverSchema.js'
+import { createDriverSchema } from '../validators/Driver/createDriverSchema.js'
+import { updateDriverSchema } from '../validators/Driver/updateDriverSchema.js'
 
 
 const { Driver } = db;
 
+// get all drivers
+export const getDrivers = async (req, res) => {
+    return res.send(await Driver.findAll())
+}
+
+// show driver
+export const getDriver = async (req, res) => {
+
+    const driver = await Driver.findByPk(req.params.id)
+
+    if (driver)
+        return res.json(driver)
+
+    return res.status(404).json({ error: 'Not found!' })
+}
+
+// register
 export const createDriver = async (req, res) => {
 
     try {
-        const { value: driverData, validationError } = createDriverSchema.validate(req.body)
+        const { value, error } = createDriverSchema.validate(req.body)
 
-        if (validationError)
-            return res.status(400).json({ error: validationError.details[0].message })
+        if (error)
+            return res.status(400).json({ error: error.details[0].message })
 
-        const driver = await Driver.create(driverData)
-
-
+        const driver = await Driver.create(value)
         await sendKafkaMessage('driver_created', String(driver.id), driver)
 
         return res.status(201).json(driver)
@@ -34,13 +50,32 @@ export const createDriver = async (req, res) => {
     }
 }
 
+// update a driver
+export const updateDriver = async (req, res) => {
 
-export const getDriver = async (req, res) => {
+    try {
 
-    const driver = await Driver.findByPk(req.params.id)
+        const { value, error } = updateDriverSchema.validate(req.body)
 
-    if (driver)
-        return res.json(driver)
+        if (error)
+            return res.status(400).json({ error: error.details[0].message })
 
-    return res.status(404).json({ error: 'Not found!' })
+        const driver = Driver.update(value, { where: {id: req.params.id} })
+        await sendKafkaMessage('driver_updated', String(driver.id), driver)
+
+        return res.send('Driver Updated Successfully!')
+    }
+
+    catch(err)
+{
+        if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({
+                error: 'Validation error',
+                details: err.errors.map(e => e.message),
+            });
+        }
+
+        res.status(500).json({ error: err.message });
+    }
 }
+
