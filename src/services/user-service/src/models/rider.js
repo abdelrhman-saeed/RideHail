@@ -1,8 +1,9 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes } from 'sequelize'
+import bcrypt from 'bcryptjs'
 
 
 export default (sequelize) => {
-    class Rider extends Model {}
+    class Rider extends Model { }
 
     Rider.init({
         id: {
@@ -49,6 +50,17 @@ export default (sequelize) => {
         tableName: 'Riders',
         // underscored: true,
         timestamps: false,
+
+        hooks: {
+            beforeCreate: async (rider) => {
+                rider.passwordHash = await bcrypt.hash(rider.passwordHash, 10)
+            },
+
+            beforeUpdate: async (rider) => {
+                if (!rider.changed('passwordHash')) return
+                rider.passwordHash = await bcrypt.hash(rider.passwordHash, 10)
+            }
+        }
     });
 
     return Rider;
