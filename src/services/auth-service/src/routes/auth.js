@@ -1,8 +1,10 @@
 import express from 'express'
-import { login } from '../controllers/authController.js'
+import * as authController from '../controllers/authController.js'
 
 const router = express.Router()
 
-router.post('/:role(driver|rider)/login', login)
+router.post('/:role/login', authController.login)
+router.post('/refresh', authController.refresh)
+router.post('/logout', authController.logout)
 
 export default router

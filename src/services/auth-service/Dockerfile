@@ -14,10 +14,7 @@ RUN npm install --include=dev
 COPY . .
 
 # Expose the app port
-EXPOSE 3004
+EXPOSE 3001
 
 # Run app in development mode
 CMD ["npm", "run", "dev"]
-
-#CMD [ "node", "src/index.js" ]
-#CMD [ "sh", "-c", "npx sequelize-cli db:migrate && npm start" ]

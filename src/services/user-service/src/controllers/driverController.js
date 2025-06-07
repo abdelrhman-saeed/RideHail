@@ -37,9 +37,9 @@ export const createDriver = async (req, res) => {
         return res.status(201).json(driver)
     }
 
-    catch (err)
-    {
+    catch (err) {
         if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
+
             return res.status(400).json({
                 error: 'Validation error',
                 details: err.errors.map(e => e.message),
@@ -60,15 +60,15 @@ export const updateDriver = async (req, res) => {
         if (error)
             return res.status(400).json({ error: error.details[0].message })
 
-        const driver = Driver.update(value, { where: {id: req.params.id} })
+        const driver = Driver.update(value, { where: { id: req.params.id } })
         await sendKafkaMessage('driver_updated', String(driver.id), driver)
 
         return res.send('Driver Updated Successfully!')
     }
 
-    catch(err)
-{
+    catch (err) {
         if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
+
             return res.status(400).json({
                 error: 'Validation error',
                 details: err.errors.map(e => e.message),

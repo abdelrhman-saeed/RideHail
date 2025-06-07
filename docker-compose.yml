@@ -27,9 +27,21 @@ services:
         networks:
             - "app-network"
 
-    # mongo:
-    #     image: mongo
-    #     container_name: mongo
+    memcached:
+      image: memcached
+      container_name: memcached
+      ports:
+        - "11211:11211"
+      command:
+          - --conn-limit=1024
+          - --memory-limit=64
+          - --threads=4
+      networks:
+          - "app-network"
+
+      # mongo:
+      #     image: mongo
+      #     container_name: mongo
     #     ports:
     #       - "27017:27017"
     #     networks:
@@ -71,7 +83,7 @@ services:
           - ./src/services/user-service/src:/app/src
 
         ports:
-            - "${LOCAL_HOST_PORT}:${USER_SERVICE_PORT}"
+          - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
 
         depends_on:
             - mysql 
@@ -79,6 +91,21 @@ services:
 
         networks:
             - "app-network"
+
+    auth-service:
+        container_name: "auth-service"
+        build: ./src/services/auth-service/
+        env_file:
+          - ./src/services/auth-service/.env
+        volumes:
+          - ./src/services/auth-service/src:/app/src
+
+        ports:
+          - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
+
+        networks:
+            - "app-network"
+        
 
 volumes:
   mysql_data:
