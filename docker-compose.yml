@@ -4,6 +4,8 @@ networks:
 
 services:
 
+    
+
     zookeeper:
         container_name: zookeeper
         image: confluentinc/cp-zookeeper:latest
@@ -82,15 +84,14 @@ services:
         volumes:
           - ./src/services/user-service/src:/app/src
 
-        ports:
-          - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
-
         depends_on:
             - mysql 
             - kafka
 
         networks:
             - "app-network"
+        ports:
+            - "3004:3004"
 
     auth-service:
         container_name: "auth-service"
@@ -100,11 +101,30 @@ services:
         volumes:
           - ./src/services/auth-service/src:/app/src
 
-        ports:
-          - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
-
         networks:
             - "app-network"
+
+        depends_on:
+            - user-service
+            - memcached
+        ports:
+          - "3001:3001"
+
+    api-gateway:
+        container_name: "api-gateway"
+        build: ./src/services/api-gateway/
+        env_file:
+          - ./src/services/api-gateway/.env
+        volumes:
+          - ./src/services/api-gateway/src:/app/src
+        networks:
+            - "app-network"
+        ports:
+          - "3000:3000"
+
+        depends_on:
+            - user-service
+            - auth-service
         
 
 volumes:
