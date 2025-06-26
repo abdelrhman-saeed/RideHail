@@ -1,133 +1,155 @@
+
+# ---------------- Shared Network ----------------
 networks:
-    app-network:
-        driver: bridge
+  app-network:
+    driver: bridge
 
-services:
-
-    
-
-    zookeeper:
-        container_name: zookeeper
-        image: confluentinc/cp-zookeeper:latest
-        environment:
-            ZOOKEEPER_CLIENT_PORT: 2181
-        networks:
-            - "app-network"
-
-    kafka:
-        image: confluentinc/cp-kafka:latest
-        container_name: kafka
-        environment:
-            KAFKA_BROKER_ID: 1
-            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-        ports:
-          - "9092:9092"
-        depends_on:
-            - zookeeper
-        networks:
-            - "app-network"
-
-    memcached:
-      image: memcached
-      container_name: memcached
-      ports:
-        - "11211:11211"
-      command:
-          - --conn-limit=1024
-          - --memory-limit=64
-          - --threads=4
-      networks:
-          - "app-network"
-
-      # mongo:
-      #     image: mongo
-      #     container_name: mongo
-    #     ports:
-    #       - "27017:27017"
-    #     networks:
-    #         - "app-network"
-
-    mysql:
-
-        image: mysql:9
-        restart: always
-        container_name: mysql
-
-        environment:
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-            # Password for root access
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-
-        ports:
-        # <Port exposed> : <MySQL Port running inside container>
-            - '3306:3306'
-        expose:
-        # Opens port 3306 on the container
-            - '3306'
-      # Where our data will be persisted
-
-        volumes:
-          - mysql_data:/var/lib/mysql
-        networks:
-            - app-network
-
-
-    user-service:
-        build: ./src/services/user-service
-        container_name: "user-service"
-
-        env_file:
-            - ./src/services/user-service/.env
-
-        volumes:
-          - ./src/services/user-service/src:/app/src
-
-        depends_on:
-            - mysql 
-            - kafka
-
-        networks:
-            - "app-network"
-        ports:
-            - "3004:3004"
-
-    auth-service:
-        container_name: "auth-service"
-        build: ./src/services/auth-service/
-        env_file:
-          - ./src/services/auth-service/.env
-        volumes:
-          - ./src/services/auth-service/src:/app/src
-
-        networks:
-            - "app-network"
-
-        depends_on:
-            - user-service
-            - memcached
-        ports:
-          - "3001:3001"
-
-    api-gateway:
-        container_name: "api-gateway"
-        build: ./src/services/api-gateway/
-        env_file:
-          - ./src/services/api-gateway/.env
-        volumes:
-          - ./src/services/api-gateway/src:/app/src
-        networks:
-            - "app-network"
-        ports:
-          - "3000:3000"
-
-        depends_on:
-            - user-service
-            - auth-service
-        
-
+# ---------------- Volumes ----------------
 volumes:
   mysql_data:
-  node_modules:
-    
+
+# ---------------- Services ----------------
+services:
+
+  # ---------------- Zookeeper ----------------
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - app-network
+
+  # ---------------- Kafka ----------------
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------------- Memcached ----------------
+  memcached:
+    container_name: memcached
+    image: memcached
+    ports:
+      - "11211:11211"
+    command:
+      - --conn-limit=1024
+      - --memory-limit=64
+      - --threads=4
+    networks:
+      - app-network
+
+  # ---------------- MySQL ----------------
+  mysql:
+    container_name: mysql
+    image: mysql:9
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # ---------------- User Service ----------------
+  user-service:
+    container_name: user-service
+    build: ./src/services/user-service
+    env_file:
+      - ./src/services/user-service/.env
+    volumes:
+      - ./src/services/user-service/src:/app/src
+    depends_on:
+      mysql:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+    networks:
+      - app-network
+
+  # ---------------- Ride Service ----------------
+  ride-service:
+    container_name: ride-service
+    build: ./src/services/ride-service
+    env_file:
+      - ./src/services/ride-service/.env
+    volumes:
+      - ./src/services/ride-service:/app
+    depends_on:
+      mysql:
+        condition: service_started
+      api-gateway:
+        condition: service_started
+      user-service:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+    environment:
+      - KAFKAJS_NO_PARTITIONER_WARNING=1
+      - USER_SERVICE_URL=http://user-service:${USER_SERVICE_PORT}
+    ports:
+      - "${RIDE_SERVICE_PORT}:${RIDE_SERVICE_PORT}"
+      - "9229:9229"
+    command: npm run dev
+    networks:
+      - app-network
+
+  # ---------------- Auth Service ----------------
+  auth-service:
+    container_name: auth-service
+    build: ./src/services/auth-service
+    env_file:
+      - ./src/services/auth-service/.env
+    volumes:
+      - ./src/services/auth-service/src:/app/src
+    depends_on:
+      user-service:
+        condition: service_started
+      memcached:
+        condition: service_started
+    ports:
+      - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
+    networks:
+      - app-network
+
+  # ---------------- API Gateway ----------------
+  api-gateway:
+    container_name: api-gateway
+    build: ./src/services/api-gateway
+    env_file:
+      - ./src/services/api-gateway/.env
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:${AUTH_SERVICE_PORT}
+      - USER_SERVICE_URL=http://user-service:${USER_SERVICE_PORT}
+      - RIDE_SERVICE_URL=http://ride-service:${RIDE_SERVICE_PORT}
+    volumes:
+      - ./src/services/api-gateway/src:/app/src
+    depends_on:
+      user-service:
+        condition: service_started
+      auth-service:
+        condition: service_started
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+    networks:
+      - app-network
