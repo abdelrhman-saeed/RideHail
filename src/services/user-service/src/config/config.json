@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "secret",
-    "database": "ride-hail",
+    "database": "ride_hail_users",
     "host": "mysql",
     "dialect": "mysql"
   },
