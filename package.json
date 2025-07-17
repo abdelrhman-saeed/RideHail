@@ -1,5 +1,5 @@
 {
-  "devDependencies": {
-    "@types/node": "^22.15.29"
+  "dependencies": {
+    "kafkajs": "^2.2.4"
   }
 }

@@ -5,6 +5,7 @@ import sequelize from './database/sequeilize.js'
 import driverRoutes from './routes/driver.js'
 import riderRoutes from './routes/rider.js'
 import verificationRoutes from './routes/verifyCredentials.js'
+import { sendKafkaMessage } from './kafka/producer.js'
 
 // 
 const app = express()
@@ -15,7 +16,6 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/riders', riderRoutes)
 app.use('/drivers', driverRoutes)
 app.use('/verify-credentials', verificationRoutes)
-
 
 await sequelize.sync()
 

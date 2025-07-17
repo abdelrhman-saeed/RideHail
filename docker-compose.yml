@@ -11,28 +11,22 @@ volumes:
 # ---------------- Services ----------------
 services:
 
-  # ---------------- Zookeeper ----------------
-  zookeeper:
-    container_name: zookeeper
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    networks:
-      - app-network
-
   # ---------------- Kafka ----------------
   kafka:
     container_name: kafka
-    image: confluentinc/cp-kafka:latest
+    image: bitnami/kafka:latest
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_KRAFT_CLUSTER_ID=OaVOPQ2bTzKqluD7Q2nxYw
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
     ports:
       - "9092:9092"
-    depends_on:
-      - zookeeper
     networks:
       - app-network
     healthcheck:
@@ -114,6 +108,33 @@ services:
     networks:
       - app-network
 
+  # ---------------- Location Service ----------------
+  location-service:
+    container_name: location-service
+    build: ./src/services/location-service
+    env_file:
+      - ./src/services/location-service/.env
+    volumes:
+      - ./src/services/location-service:/app
+    depends_on:
+      api-gateway:
+        condition: service_started
+#      user-service:
+#        condition: service_started
+      kafka:
+        condition: service_healthy
+    environment:
+      - KAFKAJS_NO_PARTITIONER_WARNING=1
+      - LOCATION_SERVICE_URL=${LOCATION_SERVICE_URL}
+#      - USER_SERVICE_URL=http://user-service:${USER_SERVICE_PORT}
+    ports:
+      - "${LOCATION_SERVICE_PORT}:${LOCATION_SERVICE_PORT}"
+#      - "9229:9229"
+      - "8080:8080"
+    command: npm run dev
+    networks:
+      - app-network
+
   # ---------------- Auth Service ----------------
   auth-service:
     container_name: auth-service
@@ -131,6 +152,20 @@ services:
       - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
     networks:
       - app-network
+      #
+  # ---------------- Auth Service ----------------
+  logging-service:
+    container_name: logging-service
+    build: ./src/services/logging-service
+    volumes:
+      - ./src/services/logging-service/src:/app/src
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "${LOGGING_SERVICE_PORT}:${LOGGING_SERVICE_PORT}"
+    networks:
+      - app-network
 
   # ---------------- API Gateway ----------------
   api-gateway:
@@ -139,9 +174,12 @@ services:
     env_file:
       - ./src/services/api-gateway/.env
     environment:
-      - AUTH_SERVICE_URL=http://auth-service:${AUTH_SERVICE_PORT}
-      - USER_SERVICE_URL=http://user-service:${USER_SERVICE_PORT}
-      - RIDE_SERVICE_URL=http://ride-service:${RIDE_SERVICE_PORT}
+
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}:${AUTH_SERVICE_PORT}
+      - USER_SERVICE_URL=${USER_SERVICE_URL}:${USER_SERVICE_PORT}
+      - RIDE_SERVICE_URL=${RIDE_SERVICE_URL}:${RIDE_SERVICE_PORT}
+      - LOCATION_SERVICE_URL=${LOCATION_SERVICE_URL}:${LOCATION_SERVICE_PORT}
+
     volumes:
       - ./src/services/api-gateway/src:/app/src
     depends_on:
