@@ -1,0 +1,1042 @@
+{
+	"info": {
+		"_postman_id": "2a78237a-f75d-4acd-b5f8-3991d15eaddd",
+		"name": "Ride Hail App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41468862"
+	},
+	"item": [
+		{
+			"name": "Ride Service",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pickup_latitude\":      \"30.0444\",\n    \"pickup_longitude\":     \"31.2357\",\n    \"dropoff_latitude\":     \"31.4567\",\n    \"dropoff_longitude\":    \"31.8904\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{api-gateway-port}}/{{ride-service}}",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{api-gateway-port}}",
+							"path": [
+								"{{ride-service}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pickup_latitude\": \"30.0444\",\n    \"pickup_longitude\": \"31.2357\",\n    \"dropoff_latitude\": \"31.4567\",\n    \"dropoff_longitude\": \"31.8904\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{api-gateway-port}}/{{ride-service}}/:id",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{api-gateway-port}}",
+							"path": [
+								"{{ride-service}}",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ride Status",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pickupLocation\": {\n        \"latitude\": \"00,0000\",\n        \"longitude\": \"00.0000\"\n    },\n\n    \"dropoffLocation\": {\n        \"latitude\": \"00,0000\",\n        \"longitude\": \"00.0000\"\n    },\n\n    \"riderType\": \"UberX\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/rides/:rideId/status",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"rides",
+								":rideId",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "rideId",
+									"value": "xx"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Driver Service",
+			"item": [
+				{
+					"name": "New Folder",
+					"item": []
+				},
+				{
+					"name": "Update Availability",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"available\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/drivers/:driverId/availability",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"drivers",
+								":driverId",
+								"availability"
+							],
+							"variable": [
+								{
+									"key": "driverId",
+									"value": "xx"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"latitude\": \"00.0000\",\n    \"longitude\": \"00.0000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/drivers/:driverId/location",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"drivers",
+								":driverId",
+								"location"
+							],
+							"variable": [
+								{
+									"key": "driverId",
+									"value": "xx"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Ride Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"latitude\": \"00.0000\",\n    \"longitude\": \"00.0000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/rides/:rideId/accept",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"rides",
+								":rideId",
+								"accept"
+							],
+							"variable": [
+								{
+									"key": "rideId",
+									"value": "xx"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Ride Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"Arriving\" // [\"Arriving\", \"In Transit\", \"Completed\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/rides/:rideId/status",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"rides",
+								":rideId",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "rideId",
+									"value": "xx"
+								}
+							]
+						},
+						"description": "### Update Ride Status\n\nThis endpoint is used to update the status of a specific ride identified by the `rideId`.\n\n#### Request\n\n- Method: PUT\n    \n- URL: `{{host}}/api/rides/:rideId/status`\n    \n- { \"status\": \"Arriving\"}\n    \n\n#### Response\n\nThe response of this request follows the JSON schema below:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"message\": {\n      \"type\": \"string\"\n    }\n  }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"abdelrhman\",\n    \"email\": \"ahmed6@gmail.com\",\n    \"phoneNumber\": \"11522074129\",\n    \"passwordHash\": \"password\",\n    \"vehicleMake\": \"bmw\",\n    \"vehicleModel\": \"X3\",\n    \"licensePlate\": \"1c124\",\n    \"status\": \"AVAILABLE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{user-service-port}}/drivers",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{user-service-port}}",
+							"path": [
+								"drivers"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Service",
+			"item": [
+				{
+					"name": "Drivers CRUD",
+					"item": [
+						{
+							"name": "Register",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\":             \"driver3\",\n    \"email\":            \"driver3@gmail.com\",\n    \"phoneNumber\":      \"02522074139\",\n    \"passwordHash\":     \"password\",\n    \"vehicleMake\":      \"bmw\",\n    \"vehicleModel\":     \"X3\",\n    \"licensePlate\":     \"3c125\",\n    \"status\":           \"AVAILABLE\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{user-service-port}}/drivers",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{user-service-port}}",
+									"path": [
+										"drivers"
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\":             \"abdelrhman2-updated\",\n    \"email\":            \"abdelrhman2updated@gmail.com\",\n    \"phoneNumber\":      \"03522074129\",\n    \"vehicleMake\":      \"bmw\",\n    \"vehicleModel\":     \"X3\",\n    \"licensePlate\":     \"4c124\",\n    \"status\":           \"AVAILABLE\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{user-service-port}}/drivers/:id",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{user-service-port}}",
+									"path": [
+										"drivers",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"abdelrhman-updated\",\n    \"email\": \"ahmed5@gmail.com\",\n    \"phoneNumber\": \"01522074129\",\n    \"vehicleMake\": \"bmw\",\n    \"vehicleModel\": \"X3\",\n    \"licensePlate\": \"2c124\",\n    \"status\": \"AVAILABLE\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{user-service-port}}/drivers/:id",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{user-service-port}}",
+									"path": [
+										"drivers",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Driver",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{user-service-port}}/drivers/:id",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{user-service-port}}",
+									"path": [
+										"drivers",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						},
+						{
+							"name": "all",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{api-gateway-port}}/{{user-service}}/drivers",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{api-gateway-port}}",
+									"path": [
+										"{{user-service}}",
+										"drivers"
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Riders CRUD",
+					"item": [
+						{
+							"name": "create",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"rider23\",\n    \"email\": \"rider2245@gmail.com\",\n    \"phoneNumber\": \"01555422074129\",\n    \"passwordHash\": \"password\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{api-gateway-port}}/{{user-service}}/riders",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{api-gateway-port}}",
+									"path": [
+										"{{user-service}}",
+										"riders"
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"rider-updated\",\n    \"email\": \"riderupdated@gmail.com\",\n    \"phoneNumber\": \"01622074129\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{api-gateway-port}}/{{user-service}}/riders/:id",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{api-gateway-port}}",
+									"path": [
+										"{{user-service}}",
+										"riders",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						},
+						{
+							"name": "show",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{api-gateway-port}}/{{user-service}}/riders/:id",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{api-gateway-port}}",
+									"path": [
+										"{{user-service}}",
+										"riders",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						},
+						{
+							"name": "all",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{api-gateway-port}}/{{user-service}}/riders",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{api-gateway-port}}",
+									"path": [
+										"{{user-service}}",
+										"riders"
+									]
+								},
+								"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Verify Credentials",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":            \"driver3@gmail.com\",\n    \"password\":         \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{api-gateway-port}}/{{user-service}}/verify-credentials/:role",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{api-gateway-port}}",
+							"path": [
+								"{{user-service}}",
+								"verify-credentials",
+								":role"
+							],
+							"variable": [
+								{
+									"key": "role",
+									"value": "driver",
+									"description": "role value is \"driver\" or \"rider\""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":            \"rider2245@gmail.com\",\n    \"password\":         \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{api-gateway-port}}/{{auth-service}}/:role/login",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{api-gateway-port}}",
+							"path": [
+								"{{auth-service}}",
+								":role",
+								"login"
+							],
+							"variable": [
+								{
+									"key": "role",
+									"value": "rider"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJyaWRlcjIyM0BnbWFpbC5jb20iLCJ1c2VyVHlwZSI6InJpZGVyIiwiaWF0IjoxNzQ5NDY5NDc1LCJleHAiOjE3NDk1NTU4NzV9.NvZajP9I1zwg8YdgTCxhWnaGNWDLcuCnOM832DoqRGU\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{api-gateway-port}}/{{auth-service}}/refresh",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{api-gateway-port}}",
+							"path": [
+								"{{auth-service}}",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJyaWRlcjIyM0BnbWFpbC5jb20iLCJ1c2VyVHlwZSI6InJpZGVyIiwiaWF0IjoxNzQ5NDY5NDc1LCJleHAiOjE3NDk1NTU4NzV9.NvZajP9I1zwg8YdgTCxhWnaGNWDLcuCnOM832DoqRGU\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{api-gateway-port}}/{{auth-service}}/logout",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{api-gateway-port}}",
+							"path": [
+								"{{auth-service}}",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Location Service",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://127.0.0.1",
+			"type": "string"
+		},
+		{
+			"key": "api-gateway-port",
+			"value": "3000",
+			"type": "string"
+		},
+		{
+			"key": "auth-service",
+			"value": "auth",
+			"type": "string"
+		},
+		{
+			"key": "user-service",
+			"value": "users",
+			"type": "string"
+		},
+		{
+			"key": "ride-service",
+			"value": "rides",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJyaWRlcjIyNDVAZ21haWwuY29tIiwidXNlclR5cGUiOiJyaWRlciIsImlhdCI6MTc1MTIwMDAzNywiZXhwIjoxNzUxMjg2NDM3fQ.RG98PvVpThEirWYCaFASyI6Wu5dHXRABo67uO-k1Rmc",
+			"type": "string"
+		}
+	]
+}
